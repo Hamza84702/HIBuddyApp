@@ -1,4 +1,4 @@
-import { isImage, isAudio, isPDF, isVideo } from "@/helpers";
+import { isImage, isAudio, isPDF, isVideo, isPreviewable } from "@/helpers";
 import {
     PaperClipIcon,
     ArrowDownTrayIcon,
@@ -13,7 +13,7 @@ const MessageAttachments = ({ attachments, attachmentClick }) => {
                 <div className="mt-2 flex flex-wrap justify-end gap-1">
                     {attachments.map((attachment, ind) => (
                         <div
-                            onClick={(ev) => attachmentClick(attachment, ind)}
+                            onClick={(ev) => attachmentClick(attachments, ind)}
                             key={attachment.id}
                             className={
                                 `group flex flex-col items-center justify-center text-gray-500 relative cursor-pointer ` +
@@ -40,7 +40,7 @@ const MessageAttachments = ({ attachments, attachmentClick }) => {
                                 />
                             )}
                             {isVideo(attachment) && (
-                                <div className="relative flex ustify-center items-center">
+                                <div className="relative flex justify-center items-center">
                                     <PlayCircleIcon className="z-20 absolute w-1 h-16 text-white opacity-70" />
 
                                     <div className="absoulute left-0 top-0 w-full h-full bg-black/0 z-10"></div>

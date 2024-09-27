@@ -1,4 +1,4 @@
-import { formatBytes } from "@/helpers";
+import { formatBytes, isPDF } from "@/helpers";
 import { PaperClipIcon } from "@heroicons/react/24/solid";
 import React from "react";
 

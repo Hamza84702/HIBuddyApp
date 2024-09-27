@@ -9,7 +9,7 @@ import axios from "axios";
 import { useCallback, useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import {AttachmentPreviewModal} from "@/Components/App/AttachmentPreviewModal";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal";
 function Home({ selectedConversation = null, messages = null }) {
     // console.log("messages", messages);
     const [localMessages, setlocalMessages] = useState([]);
@@ -17,7 +17,7 @@ function Home({ selectedConversation = null, messages = null }) {
     const loadMoreIntersect = useRef(null);
     const [noMoreMessages, setNoMoreMessages] = useState(false);
     const [ScrollFromBottom, setScrollFromBottom] = useState(0);
-    const [showAttachmentPreview, setShowAtteachmentPreview] = useState(false);
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
     const [previewAttachment, setPreviewAttachment] = useState({});
     const { on } = useEventBus();
     const messageCreated = (message) => {
@@ -26,27 +26,27 @@ function Home({ selectedConversation = null, messages = null }) {
             selectedConversation.is_group &&
             selectedConversation.id === message.group_id
         ) {
-            setlocalMessages((prevMessages)=> [...prevMessages, message]);
+            setlocalMessages((prevMessages) => [...prevMessages, message]);
         }
         if (
             selectedConversation &&
             selectedConversation.is_user &&
-            (selectedConversation.id == message.sender_id || selectedConversation.id == message.receiver_id)
+            (selectedConversation.id == message.sender_id ||
+                selectedConversation.id == message.receiver_id)
         ) {
-            setlocalMessages((prevMessages)=> [...prevMessages, message]);
+            setlocalMessages((prevMessages) => [...prevMessages, message]);
         }
     };
 
-    const loadMoreMessages= useCallback(()=>{
+    const loadMoreMessages = useCallback(() => {
         //Find the first message object
         if (noMoreMessages) {
             return;
-            
         }
         const firstMessage = localMessages[0];
         axios
-            .get(route("message.loadOlder",firstMessage.id))
-            .then(({data})=>{
+            .get(route("message.loadOlder", firstMessage.id))
+            .then(({ data }) => {
                 if (data.data.length === 0) {
                     setNoMoreMessages(true);
                     return;
@@ -55,19 +55,20 @@ function Home({ selectedConversation = null, messages = null }) {
                 const scrollHeight = messagesCtrRef.current.scrollHeight;
                 const scrollTop = messagesCtrRef.current.scrollTop;
                 const clientHeight = messagesCtrRef.current.clientHeight;
-                const tmpScrollFromBottom = scrollHeight - scrollTop - clientHeight;
+                const tmpScrollFromBottom =
+                    scrollHeight - scrollTop - clientHeight;
                 console.log("tmpScrollFromBottom ", tmpScrollFromBottom);
                 setScrollFromBottom(scrollHeight - scrollTop - clientHeight);
-                setlocalMessages((prevMessages)=>{
+                setlocalMessages((prevMessages) => {
                     return [...data.data.reverse(), ...prevMessages];
                 });
             });
-    },[localMessages, noMoreMessages]);
+    }, [localMessages, noMoreMessages]);
 
-    const onAttachmentClick = (attachment, ind) => {
-        setPreviewAttachment({attachment,ind,});
-        setShowAtteachmentPreview(true);
-    }
+    const onAttachmentClick = (attachments, ind) => {
+        setPreviewAttachment({ attachments, ind });
+        setShowAttachmentPreview(true);
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -91,20 +92,19 @@ function Home({ selectedConversation = null, messages = null }) {
     }, [messages]);
 
     useEffect(() => {
-        if (messagesCtrRef.current && ScrollFromBottom !==null) {
+        if (messagesCtrRef.current && ScrollFromBottom !== null) {
             messagesCtrRef.current.scrollTop =
-            messagesCtrRef.current.scrollHeight -
-            messagesCtrRef.current.offsetHeight -
-            ScrollFromBottom;
+                messagesCtrRef.current.scrollHeight -
+                messagesCtrRef.current.offsetHeight -
+                ScrollFromBottom;
         }
 
-        if(noMoreMessages)
-        {
+        if (noMoreMessages) {
             return;
         }
 
         const observer = new IntersectionObserver(
-            (enteries) => 
+            (enteries) =>
                 enteries.forEach(
                     (entry) => entry.isIntersecting && loadMoreMessages()
                 ),
@@ -119,12 +119,11 @@ function Home({ selectedConversation = null, messages = null }) {
             }, 100);
         }
 
-        return () =>{
+        return () => {
             observer.disconnect();
         };
+    }, [localMessages]);
 
-    }, [localMessages])
-    
     return (
         <>
             {!messages && (
@@ -158,6 +157,7 @@ function Home({ selectedConversation = null, messages = null }) {
                                     <MessageItem
                                         key={message.id}
                                         message={message}
+                                        attachmentClick={onAttachmentClick}
                                     />
                                 ))}
                             </div>
@@ -171,10 +171,9 @@ function Home({ selectedConversation = null, messages = null }) {
                     attachments={previewAttachment.attachments}
                     index={previewAttachment.ind}
                     show={showAttachmentPreview}
-                    onClose={() => setShowAtteachmentPreview(false)}
+                    onClose={() => setShowAttachmentPreview(false)}
                 />
             )}
-   
         </>
     );
 }

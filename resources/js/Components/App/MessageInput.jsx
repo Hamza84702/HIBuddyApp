@@ -4,6 +4,7 @@ import {
     PaperAirplaneIcon,
     PaperClipIcon,
     PhotoIcon,
+    XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import NewMessageInput from "./NewMessageInput";
@@ -13,6 +14,7 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import axios from "axios";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import AttachmentPreview from "./AttachmentPreview";
+import { isAudio, isImage } from "@/helpers";
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("");
@@ -30,7 +32,7 @@ const MessageInput = ({ conversation = null }) => {
                 url: URL.createObjectURL(file),
             };
         });
-
+        ev.target.value = null;
         setChosenFiles((prevFiles) => {
             return [...prevFiles, ...updatedFiles];
         });
@@ -40,7 +42,8 @@ const MessageInput = ({ conversation = null }) => {
         if (messageSending) {
             return;
         }
-        if (newMessage.trim() === "") {
+        if (newMessage.trim() === "" &&  chosenFiles.length === 0) {
+
             setInputErrorMessage(
                 "Please provide a message or upload attachments."
             );
@@ -51,7 +54,7 @@ const MessageInput = ({ conversation = null }) => {
         }
         const formData = new FormData();
         chosenFiles.forEach((file) => {
-            formData.append("attachemnts[]", file.file);
+            formData.append("attachments[]", file.file);
         });
         formData.append("message", newMessage);
         if (conversation.is_user) {
@@ -157,19 +160,19 @@ const MessageInput = ({ conversation = null }) => {
                     <p className="text-xs text-red-400">{inputErrorMessage}</p>
                 )}
                 <div className="flex flex-wrap gap-1 mt-2">
-                    {chosenFiles.map((file) => {
+                    {chosenFiles.map((file) => (
                         <div
                             key={file.file.name}
                             className={
                                 `relative flex justify-between cursor-pointer ` +
-                                (!isimage(file.file) ? "w-[240px]" : "")
+                                (!isImage(file.file) ? "w-[240px]" : "")
                             }
                         >
                             {isImage(file.file) && (
                                 <img
                                     src={file.url}
                                     alt=""
-                                    className="w-16 h-1 object-cover"
+                                    className="w-16 h-16 object-cover"
                                 />
                             )}
                             {isAudio(file.file) && (
@@ -194,8 +197,8 @@ const MessageInput = ({ conversation = null }) => {
                             >
                                 <XCircleIcon className="w-" />
                             </button>
-                        </div>;
-                    })}
+                        </div>
+                    ))}
                 </div>
             </div>
 
