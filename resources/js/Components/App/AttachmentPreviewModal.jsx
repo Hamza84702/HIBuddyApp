@@ -21,17 +21,18 @@ export default function AttachmentPreviewModal({
         console.log("Index updated to:", index);
     }, [index]);
 
-    const attachment = useMemo(() => {
-        const att = attachments[currentIndex];
-        console.log("Current attachment:", att); // Debugging
-        return att;
-    }, [attachments, currentIndex]);
+   
 
     const previewableAttachments = useMemo(() => {
         const previewable = attachments.filter((attachment) => isPreviewable(attachment));
-        console.log("Previewable attachments:", previewable); // Debugging
         return previewable;
     }, [attachments]);
+
+    const attachment = useMemo(() => {
+        const att = previewableAttachments[currentIndex];
+        console.log("Current attachment:", att); // Debugging
+        return att;
+    }, [attachments, currentIndex]);
 
     const close = () => {
         onClose();

@@ -15,6 +15,7 @@ import axios from "axios";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import AttachmentPreview from "./AttachmentPreview";
 import { isAudio, isImage } from "@/helpers";
+import AudioRecorder from "./AudioRecorder";
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("");
@@ -42,8 +43,7 @@ const MessageInput = ({ conversation = null }) => {
         if (messageSending) {
             return;
         }
-        if (newMessage.trim() === "" &&  chosenFiles.length === 0) {
-
+        if (newMessage.trim() === "" && chosenFiles.length === 0) {
             setInputErrorMessage(
                 "Please provide a message or upload attachments."
             );
@@ -105,6 +105,10 @@ const MessageInput = ({ conversation = null }) => {
         axios.post(route("message.store"), data);
     };
 
+    const recordedAdioReady = (file, url) => {
+        setChosenFiles((prevFiles) =>  [...prevFiles, {file,url}]);        
+    };
+
     return (
         <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
             <div className="order-2 flex-1 xs:flex-none xs:order-1 p-2">
@@ -122,13 +126,13 @@ const MessageInput = ({ conversation = null }) => {
                     <PhotoIcon className="w-6" />
                     <input
                         type="file"
-                        name=""
                         multiple
                         onChange={onFileChange}
                         accept="image/*"
                         className="absolute left-0 top-0 right-0 bottom-0 z-20 opacity-0 cursor-pointer"
                     />
                 </button>
+                <AudioRecorder fileReady={recordedAdioReady} />
             </div>
             <div className="order-1 px-3 xs:p-0 min-w-[220px] basis-full xs:basis-0 xs:order-2 flex-1 relative">
                 <div className="flex">

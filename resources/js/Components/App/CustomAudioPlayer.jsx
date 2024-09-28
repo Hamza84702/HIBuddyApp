@@ -2,7 +2,7 @@ import { PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef, useState } from "react";
 
 const CustomAudioPlayer = ({ file, showVolume = true }) => {
-    const audioRef = useRef();
+    const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(1);
     const [duration, setDuration] = useState(0);
